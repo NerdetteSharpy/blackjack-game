@@ -4,24 +4,28 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin' # Specify the JDK distribution, e.g., 'temurin' or 'zulu'
+        java-version: '11'     # Adjust to your required Java version
 
-      - name: Compile the code
-        run: |
-          mkdir out
-          javac -d out src/main/java/com/blackjack/*.java src/test/java/com/blackjack/*.java
+    - name: Compile the code
+      run: |
+        mkdir -p out
+        javac -d out src/main/java/com/blackjack/*.java
 
-      - name: Run tests
-        run: |
-          java -cp .:junit-5.jar:out org.junit.platform.console.ConsoleLauncher --scan-classpath
+    - name: Run tests
+      run: |
+        javac -cp .;junit-5.jar -d out src/test/java/com/blackjack/*.java
+        java -cp .;junit-5.jar;out org.junit.platform.console.ConsoleLauncher --scan-classpath
